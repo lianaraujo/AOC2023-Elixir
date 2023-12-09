@@ -14,13 +14,13 @@ defmodule Day3 do
       end)
       {lines, chars}
   end 
-  def full_number({x, y}, lines) do
+  defp full_number({x, y}, lines) do
     line = Enum.at(lines, y)
     {left, right} = {find_n_index(x, line, -1), find_n_index(x, line, 1)}
     full_n = line |> String.slice(left, right - left + 1) |> String.to_integer()
     {full_n, {{left, y}, {right, y}}}
   end
-  def find_n_index(x, line, dir) do
+  defp find_n_index(x, line, dir) do
     char = String.at(line, x + dir) || ""
 
     case Integer.parse(char) do
@@ -43,6 +43,24 @@ defmodule Day3 do
     |> Enum.map(fn {n,_} -> n end)
     |> Enum.sum
   end
+  def part2(input) do
+    {lines, chars} = parse_input(input, ~r/\*/)
+     Enum.reduce(chars, 0, fn {x, y}, acc ->
+      gears =
+        Enum.reduce(@dirs, MapSet.new(), fn {dx, dy}, acc1 ->
+          check = lines |> Enum.at(y + dy) |> String.at(x + dx)
+          case check do
+            nil -> acc1
+            "." -> acc1
+            _ -> MapSet.put(acc1, full_number({x + dx, y + dy}, lines))
+          end
+        end)
+      case MapSet.size(gears) do
+        2 -> acc + (gears |> Enum.map(fn {n, _} -> n end) |> Enum.product())
+        _ -> acc
+      end
+    end)
+  end
 end
 
 example = """
@@ -59,6 +77,7 @@ example = """
 """
 {:ok, input} = File.read("day3.txt")
 Day3.part1(input) |> IO.puts
+Day3.part2(input) |> IO.puts
 
 
 
