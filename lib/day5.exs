@@ -1,4 +1,4 @@
-defmodule Day4 do
+defmodule Day5 do
   def part1(input) do
     [seeds | maps] = parse_input(input)
 
@@ -22,10 +22,11 @@ defmodule Day4 do
     s = String.to_integer(seed)
     Enum.reduce(tables, s, fn table, acc ->
       Enum.reduce(table, acc, fn [destination, source, range], acc1 -> 
-        if acc1 in source..(source + range - 1) do
+      cond do
+        acc != acc1 -> acc1 
+        acc1 in source..(source + range - 1) ->
           (acc1 - source) + destination 
-        else
-          acc1
+        true -> acc1
         end
       end)
     end)
@@ -74,5 +75,5 @@ humidity-to-location map:
 
 {:ok, input} = File.read("lib/day5.txt")
 
-Day4.part1(example) |> IO.inspect(charlists: :as_lists)
-Day4.part2(example) |> IO.inspect()
+Day5.part1(input) |> IO.inspect(charlists: :as_lists)
+Day5.part2(example) |> IO.inspect()
